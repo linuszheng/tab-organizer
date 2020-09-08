@@ -29,7 +29,30 @@ function createClicked() {
 	}
 }
 
+function receivedMessage(event) {
+	var data = JSON.parse(event.data);
+	h_title.value = data.title;
+	h_url.value = data.url;
+}
+
 h_title.addEventListener("change", titleChanged);
 h_url.addEventListener("change", urlChanged);
 h_create.addEventListener("click", createClicked);
+
+window.addEventListener("message", receivedMessage, false);
+
+
+/* -----------------------------------------------------------------------------------------------------
+// To send message:
+
+javascript:(function(){
+	var title = document.title;
+	var url = window.document.href;
+	var w = window.open("https://linuszheng.github.io/tab-organizer/create.html");
+	w.postMessage(JSON.stringify({
+		title: title,
+		url: url
+	}), "https://linuszheng.github.io/tab-organizer/create.html");
+})();
+*/
 
