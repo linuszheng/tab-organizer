@@ -7,6 +7,8 @@ var h_create = document.getElementById("create-btn");
 var title = "";
 var url = "";
 
+var isPopup = false;
+
 function titleChanged() {
 	title = h_title.value;
 }
@@ -25,6 +27,11 @@ function createClicked() {
 			h_url.value = "";
 			titleChanged();
 			urlChanged();
+			setTimeout(function(){
+				if(isPopup){
+					window.close();
+				}
+			},1000);
 		});
 	}
 }
@@ -37,7 +44,6 @@ h_create.addEventListener("click", createClicked);
 // message sending and receiving -----------------------------------------------------------------------
 
 function receivedMessage(event) {
-	alert(event.data);
 	h_title.value = event.data.title;
 	h_url.value = event.data.url;
 	titleChanged();
@@ -47,6 +53,7 @@ function receivedMessage(event) {
 window.addEventListener("message", receivedMessage, false);
 
 if(window.opener != null) {
+	isPopup = true;
 	var w = window.opener;
 	w.postMessage("ready","*");
 }
@@ -56,10 +63,9 @@ if(window.opener != null) {
 // javascript:(function(){
 // 	var title = document.title;
 // 	var url = window.document.URL;
-// 	var target = "https://linuszheng.github.io/tab-organizer/create.html"
+// 	var target = "https://linuszheng.github.io/tab-organizer/create.html";
 // 	var w = window.open(target);
 // 	function receivedMessage(event) {
-// 		alert(event.data);
 // 		if(event.data == "ready" && event.origin == "https://linuszheng.github.io") {
 // 			w.postMessage({
 // 				title: title,
