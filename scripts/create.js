@@ -30,9 +30,9 @@ function createClicked() {
 }
 
 function receivedMessage(event) {
-	var data = JSON.parse(event.data);
-	h_title.value = data.title;
-	h_url.value = data.url;
+	console.log(event.data);
+	h_title.value = event.data.title;
+	h_url.value = event.data.url;
 }
 
 h_title.addEventListener("change", titleChanged);
@@ -41,18 +41,18 @@ h_create.addEventListener("click", createClicked);
 
 window.addEventListener("message", receivedMessage, false);
 
+// To send message: -----------------------------------------------------------------------------------------------------
 
-/* -----------------------------------------------------------------------------------------------------
-// To send message:
+// javascript:(function(){
+// 	var title = document.title;
+// 	var url = window.document.href;
+// 	var w = window.open("https://linuszheng.github.io/tab-organizer/create.html");
+// 	w.onload = function() {
+// 		w.postMessage({
+// 			title: title,
+// 			url: url
+// 		}, "https://linuszheng.github.io/tab-organizer/create.html");
+// 	};
+// })();
 
-javascript:(function(){
-	var title = document.title;
-	var url = window.document.href;
-	var w = window.open("https://linuszheng.github.io/tab-organizer/create.html");
-	w.postMessage(JSON.stringify({
-		title: title,
-		url: url
-	}), "https://linuszheng.github.io/tab-organizer/create.html");
-})();
-*/
 
