@@ -29,8 +29,8 @@ input:focus, input:not(:placeholder-shown) {
 }
 
 #enter-title {
-	font-size: 48px;
-	grid-column: 1/8;
+	font-size: 42px;
+	grid-column: 1/12;
 	grid-row: 2/4;
 }
 
