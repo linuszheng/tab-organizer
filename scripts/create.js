@@ -21,10 +21,10 @@ function createClicked() {
 			title: title,
 			url: url
 		}, function() {
-			title = "";
-			url = "";
 			h_title.value = "";
 			h_url.value = "";
+			titleChanged();
+			urlChanged();
 		});
 	}
 }
@@ -40,6 +40,8 @@ function receivedMessage(event) {
 	alert(event.data);
 	h_title.value = event.data.title;
 	h_url.value = event.data.url;
+	titleChanged();
+	urlChanged();
 }
 
 window.addEventListener("message", receivedMessage, false);
