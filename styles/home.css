@@ -1,0 +1,17 @@
+#tabs-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+ul#tabs-list > li {
+	padding: 1em;
+}
+
+ul#tabs-list > li:nth-child(even) {
+	background: #e6ffe6;
+}
+
+ul#tabs-list > li:nth-child(odd) {
+	background: #ffffe6;
+}

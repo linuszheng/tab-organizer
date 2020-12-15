@@ -1,4 +1,3 @@
-// --------------------------------- Getting elements from DOM ----------------------------------
 
 var h_title = document.getElementById("enter-title");
 var h_url = document.getElementById("enter-url");
@@ -6,7 +5,6 @@ var h_create = document.getElementById("create-btn");
 
 var title = "";
 var url = "";
-
 var isPopup = false;
 
 function titleChanged() {
@@ -31,7 +29,7 @@ function createClicked() {
 				if(isPopup){
 					window.close();
 				}
-			},1000);
+			},100);
 		});
 	}
 }
@@ -40,8 +38,12 @@ h_title.addEventListener("change", titleChanged);
 h_url.addEventListener("change", urlChanged);
 h_create.addEventListener("click", createClicked);
 
+// if popup -----------------------------------------------------------------------
 
-// message sending and receiving -----------------------------------------------------------------------
+/*		Conveniently, running a script (below) on the desired webpage will create a popup of this site with the link and title already filled
+		in. Cross-origin communication between this webpage and any webpage on the Internet (injected with the bookmarklet) limits the access that
+		one site has on the other. Because the new popup window cannot be directly accessed, we use postMessage to communicate between one
+		window and the other.		*/
 
 function receivedMessage(event) {
 	h_title.value = event.data.title;
@@ -50,15 +52,15 @@ function receivedMessage(event) {
 	urlChanged();
 }
 
-window.addEventListener("message", receivedMessage, false);
 
 if(window.opener != null) {
 	isPopup = true;
 	var w = window.opener;
 	w.postMessage("ready","*");
+	window.addEventListener("message", receivedMessage, false);
 }
 
-// To send message (bookmarklet): -----------------------------------------------------------------------------------------------------
+// script to create popup and send message (bookmarklet): ----------------------------------------------------------------------------
 
 // javascript:(function(){
 // 	var title = document.title;
