@@ -89,7 +89,7 @@ function displayTabs(){
 
 function openTabsForTime(indices, time) {
 	for(var i in indices) {
-		var url = tabs[i].url;
+		var url = tabs[indices[i]].url;
 		tabsOpen.push(window.open(url));
 	}
 	setTimeout(function(){
