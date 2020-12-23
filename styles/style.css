@@ -4,7 +4,6 @@ body {
 	font-family: Helvetica;
 	font-size: 16px;
 	display: flex;
-	height: 100%;
 }
 
 .grid {
@@ -13,6 +12,7 @@ body {
 	grid-template-rows: 1fr 9fr;
 	grid-gap: .5em;
 	height: 100%;
+	width: 100%;
 }
 
 .side-bar {
@@ -22,14 +22,14 @@ body {
 	align-self: start;
 }
 
-/*---------------------------------- TOP BAR ----------------------------------*/
+/*---------------------------------- TITLE ----------------------------------*/
 
 .title {
 	font-size: 25px;
 	grid-column: 1/3;
-	grid-row: 1/2;
-	border-bottom: solid #ff9999 .3em;
-	padding: .3em;
+	grid-row: 1/3;
+	border-bottom: solid #ff9999 9px;
+	padding: 9px;
 }
 
 
@@ -39,6 +39,8 @@ body {
 	list-style: none;
 	margin: 0;
 	padding: 0;
+	grid-column: 2/3;
+	grid-row: 1/3;
 }
 
 .side-bar ul > li {

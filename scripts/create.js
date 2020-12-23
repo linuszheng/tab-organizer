@@ -62,20 +62,22 @@ if(window.opener != null) {
 
 // script to create popup and send message (bookmarklet): ----------------------------------------------------------------------------
 
-// javascript:(function(){
-// 	var title = document.title;
-// 	var url = window.document.URL;
-// 	var target = "https://linuszheng.github.io/tab-organizer/create.html";
-// 	var w = window.open(target);
-// 	function receivedMessage(event) {
-// 		if(event.data == "ready" && event.origin == "https://linuszheng.github.io") {
-// 			w.postMessage({
-// 				title: title,
-// 				url: url
-// 			}, target);
-// 		}
-// 	}
-// 	window.addEventListener("message", receivedMessage, false);
-// })();
+/*
+javascript:(function(){
+	var title = document.title;
+	var url = window.document.URL;
+	var target = "https://linuszheng.github.io/tab-organizer/create.html";
+	var w = window.open(target);
+	function receivedMessage(event) {
+		if(event.data == "ready" && event.origin == "https://linuszheng.github.io") {
+			w.postMessage({
+				title: title,
+				url: url
+			}, target);
+		}
+	}
+	window.addEventListener("message", receivedMessage, false);
+})();
+*/
 
 

@@ -21,6 +21,14 @@
 
 	<div class="grid">
 		<div class="title">Tab Organizer</div>
+		<div class="top-bar">
+			<div id="trash">Trash</div>
+			<div style="width: 25px"></div>
+			<input type="number" id="enter-minutes" size="30" placeholder="ex.15">
+			<div id="minutes-text">minutes</div>
+			<div style="width: 25px"></div>
+			<div id="deploy-btn">Deploy</div>
+		</div>
 		<div class="side-bar">
 			<ul>
 				<li><a href="index.html">Home</a></li>
@@ -29,7 +37,8 @@
 				<li><a href="deploy.html">Deploy</a></li>
 			</ul>
 		</div>
-		<div>
+		<div style="overflow-y: auto">
+			<img src="assets/loading.gif" id="loading"/>
 			<ul id="tabs-list">
 
 			</ul>
