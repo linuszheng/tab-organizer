@@ -40,14 +40,14 @@ ul#tabs-list > li.burn {
 }
 
 .tab-checkbox {
-	flex: 0 1 0;
+	flex: 0 1 1;
 	margin: 15px;
 }
 
 .tab-burn {
 	cursor: pointer;
 	background-color: yellow;
-	flex: 0 1 0;
+	flex: 0 1 1;
 }
 
 input[type=checkbox] {
@@ -65,6 +65,13 @@ input[type=checkbox] {
 	flex-direction: row;
 	align-items: flex-end;
 	justify-content: flex-end;
+}
+
+#trash {
+	background-color: #5a5a5a;
+	color: white;
+	font-size: 20px;
+	cursor: pointer;
 }
 
 #deploy-btn {

@@ -2,14 +2,11 @@
 
 var keys = [];
 var tabs = [];
-var new_window;
+var checkedTabs = [];
 
 var h_tabs_list = document.getElementById('tabs-list');
 
 var canLink = true;
-var checkedTabs = [];
-
-var tabsOpen = []; // for testing purposes only
 
 // ---------------------------------- Functions -----------------------------------
 
@@ -54,9 +51,7 @@ function displayTabs(){
 			var li = e.target.closest('li');
 			var index = Array.from(h_tabs_list.children).indexOf(li);
 			window.open(tabs[index].url);
-			removeTab(index);
-			keys.splice(index, 1);
-			tabs.splice(index, 1);
+			deleteTab(index);
 			h_tabs_list.removeChild(li);
 		});
 		h_checkbox.addEventListener('input', function(e){
@@ -68,6 +63,7 @@ function displayTabs(){
 				for(i in checkedTabs){
 					if(checkedTabs[i]==index){
 						checkedTabs.splice(i, 1);
+						break;
 					}
 				}
 			}
@@ -87,16 +83,19 @@ function displayTabs(){
 	}
 }
 
+
+
 function openTabsForTime(indices, time) {
 	for(var i in indices) {
 		var url = tabs[indices[i]].url;
-		tabsOpen.push(window.open(url));
-	}
-	setTimeout(function(){
-		for(var i in tabsOpen) {
-			tabsOpen[i].close();
+		var tab = window.open(url);
+		function closeTab(tab, time){ 	// closure
+			setTimeout(function(){
+				tab.close();
+			}, time);
 		}
-	}, time);
+		closeTab(tab, time);
+	}
 }
 
 document.getElementById('deploy-btn').addEventListener('click', function(e){
@@ -105,11 +104,33 @@ document.getElementById('deploy-btn').addEventListener('click', function(e){
 	openTabsForTime(checkedTabs, time*60*1000);
 });
 
+document.getElementById('trash').addEventListener('click', function(e){
+	for(var i in checkedTabs) {
+		var j = checkedTabs[checkedTabs.length-1 - i]; // start deleting from bottom to top
+		deleteTab(j);
+		var listElem = h_tabs_list.childNodes[j+1]; // account for text node on top
+		h_tabs_list.removeChild(listElem);
+	}
+});
+
 // ---------------------------------- Firebase -------------------------------------
 
-function removeTab(index){
+function removeTabFromDB(index){
 	db.ref('tabs').child(keys[index]).remove();
 }
+
+function deleteTab(index){
+	removeTabFromDB(index);
+	keys.splice(index, 1);
+	tabs.splice(index, 1);
+	for(var i in checkedTabs){
+		if(checkedTabs[i]==index){
+			checkedTabs.splice(i, 1)
+			break
+		}
+	}
+}
+
 
 db.ref('tabs').once('value').then(function(snapshot){
 	document.getElementById("loading").remove();
@@ -119,37 +140,3 @@ db.ref('tabs').once('value').then(function(snapshot){
 	});
 	displayTabs();
 });
-
-
-// ----------------------------------- Testing -------------------------------------
-
-
-// function testHash() {
-// 	if(window.location.hash){
-// 		var g = window.location.hash.substring(1);
-// 	}
-// }
-
-
-// setTimeout(function(){
-// 	new_window = window.open("https://stackoverflow.com/questions/7064998/how-to-make-a-link-open-multiple-pages-when-clicked");
-// }, 10000);
-
-// setTimeout(function(){
-// 	new_window.location.href = "https://learn.vcs.net/login/index.php";
-// }, 15000);
-
-
-// setTimeout(function(){
-// 	new_window.close()
-// }, 20000);
-
-
-
-
-
-
-
-
-
-
