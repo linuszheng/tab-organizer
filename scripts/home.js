@@ -197,20 +197,16 @@ function populateWithLinks(){
 	
 }
 
-// populateWithLinks();
 
-auth.onAuthStateChanged((user)=>{
-	if(user) {
-		document.getElementById('main-container').innerHTML = `
+setAuthListeners(()=>{
+	document.getElementById('main-container').innerHTML = `
 			<img src="assets/loading2.gif" id="loading"/>
-			<div id="assign-groups-container" class="closed"></div>
+			<div id="assign-groups-container" class="hidden"></div>
 			<ul id="tabs-list">
 			</ul>`;
-		h_tabs_list = document.getElementById('tabs-list');
-		displayTabsFromDB();
-	} else {
-		makeLoginElements();
-		setLoginListeners();
-		console.log('need to login!');
-	}
+	h_tabs_list = document.getElementById('tabs-list');
+	// populateWithLinks();
+	displayTabsFromDB();
+	startListeners();
 });
+		

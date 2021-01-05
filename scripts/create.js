@@ -3,6 +3,9 @@
 var title = "";
 var url = "";
 var isPopup = false;
+var h_title;
+var h_url;
+var h_create;
 
 // -------------------------------------------------------- DOM Interactions --------------------------------------------------------
 
@@ -31,14 +34,17 @@ async function createClicked() {
 
 function makeNewContent(){
 	document.getElementById('main-container').innerHTML = `
+	<div style="height: 80px"></div>
 	<input type="text" id="enter-title" class="create-input" size="30" placeholder="title">
+	<div class="vertical-spacer"></div>
 	<input type="url" id="enter-url" class="create-input" size="100" placeholder="url">
+	<div class="vertical-spacer"></div>
 	<button id="create-btn">Create!</button>
-	<div id="extra-space"></div>`
+	<div class="vertical-spacer"></div>`;
 
-	var h_title = document.getElementById("enter-title");
-	var h_url = document.getElementById("enter-url");
-	var h_create = document.getElementById("create-btn");
+	h_title = document.getElementById("enter-title");
+	h_url = document.getElementById("enter-url");
+	h_create = document.getElementById("create-btn");
 
 	h_title.addEventListener("change", titleChanged);
 	h_url.addEventListener("change", urlChanged);
@@ -57,15 +63,7 @@ async function addToDB(){
 	});
 }
 
-auth.onAuthStateChanged((user)=>{
-	if(user){
-		makeNewContent();
-	} else {
-		makeLoginElements();
-		setLoginListeners();
-		console.log('need to login!');
-	}
-});
+setAuthListeners(makeNewContent);
 
 
 

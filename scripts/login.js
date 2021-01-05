@@ -1,4 +1,6 @@
-function makeLoginElements(){
+var logoutBtn = document.getElementById('logout-btn');
+
+function makeLoginDOMElements(){
     document.getElementById('main-container').innerHTML = `
             <p>Email</p>
 			<input type="email" id="email-field">
@@ -8,7 +10,7 @@ function makeLoginElements(){
             `;
 }
 
-function setLoginListeners(){
+function setLoginDOMListeners(){
     let emailField = document.getElementById('email-field');
     let pwField = document.getElementById('pw-field');
     let loginBtn = document.getElementById('login-btn');
@@ -28,5 +30,25 @@ function setLoginListeners(){
                 alert('error logging in!');
             });
         });
+    });
+}
+
+function setLogOutDOMListener(){
+    logoutBtn.addEventListener('click',()=>{
+        auth.signOut();
+    })
+}
+
+setLogOutDOMListener();
+function setAuthListeners(callbackOnLogin){
+    auth.onAuthStateChanged((user)=>{
+        if(user) {
+            logoutBtn.style.visibility = 'visible';
+            callbackOnLogin();
+        } else {
+            logoutBtn.style.visibility = 'hidden';
+            makeLoginDOMElements();
+            setLoginDOMListeners();
+        }
     });
 }
