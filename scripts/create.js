@@ -49,13 +49,14 @@ function makeNewContent(){
 	h_title.addEventListener("change", titleChanged);
 	h_url.addEventListener("change", urlChanged);
 	h_create.addEventListener("click", createClicked);
+	checkIfPopup();
 }
 
 
 // -------------------------------------------------------- Firebase --------------------------------------------------------
 
 async function addToDB(){
-	db.ref('tabs').push({
+	tabsRef.push({
 		title: title,
 		url: url
 	}, function(){
@@ -64,8 +65,6 @@ async function addToDB(){
 }
 
 setAuthListeners(makeNewContent);
-
-
 
 
 // ------------------------ if this is a popup created by bookmarklet.js ------------------------------
@@ -82,9 +81,11 @@ function receivedMessage(event) {
 	urlChanged();
 }
 
-if(window.opener != null) {
-	isPopup = true;
-	var w = window.opener;
-	w.postMessage("ready","*");
-	window.addEventListener("message", receivedMessage, false);
+function checkIfPopup(){
+	if(window.opener != null) {
+		isPopup = true;
+		var w = window.opener;
+		w.postMessage("ready","*");
+		window.addEventListener("message", receivedMessage, false);
+	}
 }

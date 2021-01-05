@@ -56,16 +56,39 @@ input[type=checkbox] {
 	transform: scale(2);
 }
 
-#assign-groups-container {
-	height: 100px;
-	-moz-transition: all .1s ease-in;
-    -o-transition: all .1s ease-in;
-    -webkit-transition: all .1s ease-in;
-    transition: all .1s ease-in;
+#assign-tags-container {
+	margin-bottom: 20px;
+	display: flex;
+	flex-wrap: wrap;
+
 }
 
-#assign-groups-container.hidden {
+#assign-tags-container.hidden {
 	height: 0px;
+}
+
+#assign-tags-container.hidden > div {
+	display: none;
+}
+
+.top-tag {
+	border: 2px;
+	border-radius: 5px;
+	background-color: rgb(145, 245, 153);
+
+	font-size: 20px;
+	cursor: pointer;
+
+	margin: 5px;
+}
+
+#add-tag-field {
+	border: none;
+	background-color: transparent;
+}
+
+#add-tag-field.hidden {
+	display: none;
 }
 
 /*---------------------------------- TOP BAR EXTRAS ----------------------------------*/
@@ -85,7 +108,7 @@ div.spacer {
 	width: 25px;
 }
 
-#assign-groups-btn {
+#assign-tags-btn {
 	background-color: #c23ea5;
 	color: white;
 	font-size: 20px;

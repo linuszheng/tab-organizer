@@ -8,23 +8,31 @@ var h_tabs_list;
 
 var canLink = true;
 
-// ---------------------------- Classes ----------------------------
+var tags = [];
 
-class Tab{
-	key;
-	title;
-	url;
-	tags;
+// ---------------------------- Structure ----------------------------
 
-	Tab(t){
-
-	}
+class Tab {
+	title;	// String
+	url;	// String
+	tags;	// list of Strings
 }
 
+// ---------------------------- DOM Elements ----------------------------
+
+var assignTagsContainer;
+var addTagNode;
+var addTagSubmitBtn;
+var addTagField;
 
 // ---------------------------- DOM Interactions ----------------------------
 
 function startListeners(){
+	assignTagsContainer = document.getElementById('assign-tags-container');
+	addTagNode = document.getElementById('add-tag');
+	addTagSubmitBtn = document.getElementById('add-tag-submit-btn');
+	addTagField = document.getElementById('add-tag-field');
+
 	document.getElementById('deploy-btn').addEventListener('click', function(e){
 		var time = document.getElementById('enter-minutes').value;
 		if(time<=0) return;
@@ -40,13 +48,38 @@ function startListeners(){
 			}
 		})
 	});
-	
-	document.getElementById('assign-groups-btn').addEventListener('click',()=>{
-		let assignGroupsContainer = document.getElementById('assign-groups-container');
-		let cl = assignGroupsContainer.classList.length;
-		if(cl > 0) assignGroupsContainer.classList.remove('hidden');
-		else assignGroupsContainer.classList.add('hidden');
+
+	document.getElementById('assign-tags-btn').addEventListener('click',()=>{
+		let cl = assignTagsContainer.classList.length;
+		if(cl > 0) {
+			assignTagsContainer.classList.remove('hidden');
+		}
+		else assignTagsContainer.classList.add('hidden');
 	});
+
+	addTagSubmitBtn.addEventListener('click', ()=>{
+		if(addTagField.classList.length > 0){	// if field hidden (this means addTagSubmitBtn is a +)
+			addTagField.classList.remove('hidden');
+			addTagSubmitBtn.innerHTML = '&#10003';
+		} else if (addTagField.value.length > 0){	// else addTagSubmitBtn is a checkmark
+			let newTag = addTagField.value;
+			if(!tags.includes(newTag)){
+				addTagField.value = '';
+				tags.push(newTag);
+				addTagToDOM(newTag);
+				addTagToDB(newTag);
+				addTagSubmitBtn.innerHTML = '+';
+				addTagField.classList.add('hidden');
+			}
+		}
+	});
+}
+
+function addTagToDOM(tagName) {
+	let newTagNode = document.createElement('div');
+	newTagNode.classList.add('top-tag');
+	newTagNode.innerText = tagName;
+	assignTagsContainer.insertBefore(newTagNode, addTagNode);
 }
 
 function createTabRow(tab) {
@@ -54,14 +87,14 @@ function createTabRow(tab) {
 	var h_container = document.createElement('div');
 	var h_title = document.createElement('a');
 	var h_url = document.createElement('a');
-	var h_group = document.createElement('div');
+	var h_tag = document.createElement('div');
 	var h_checkbox = document.createElement('input');
 	var h_burn = document.createElement('div');
 	
 	h_title.innerText = tab.title;
 	h_url.innerText = tab.url;
 	h_url.href = tab.url;
-	h_group.innerText = 'null';
+	h_tag.innerText = 'null';
 	h_checkbox.type = 'checkbox';
 	h_burn.innerText = 'Burn';
 
@@ -69,12 +102,12 @@ function createTabRow(tab) {
 	h_checkbox.classList.add('tab-checkbox');
 	h_burn.classList.add('tab-burn');
 	h_url.style.fontSize = '10px';
-	h_group.style.fontSize = '12px';
+	h_tag.style.fontSize = '12px';
 
 	h_container.appendChild(h_title);
 	h_container.appendChild(document.createElement('br'));
 	h_container.appendChild(h_url);
-	h_container.appendChild(h_group);
+	h_container.appendChild(h_tag);
 	h_list_elem.appendChild(h_container);
 	h_list_elem.appendChild(h_checkbox)
 	h_list_elem.appendChild(h_burn);
@@ -129,6 +162,12 @@ function displayTabs(){
 	}
 }
 
+function displayTags(){
+	for(tag of tags){
+		addTagToDOM(tag);
+	}
+}
+
 function openTabsForTime(indices, time) {
 	for(var i in indices) {
 		var url = tabs[indices[i]].url;
@@ -156,7 +195,7 @@ function removeTabFromArrays(index){
 
 
 function displayTabsFromDB() {
-	db.ref('tabs').once('value').then(function(snapshot){
+	tabsRef.once('value').then(function(snapshot){
 		document.getElementById("loading").remove();
 		snapshot.forEach(function(childSnapshot){
 			keys.push(childSnapshot.key);
@@ -166,8 +205,21 @@ function displayTabsFromDB() {
 	});
 }
 
+function displayTagsFromDB() {
+	tagsRef.once('value').then(function(snapshot){
+		tags = Object.keys(snapshot.val());
+		displayTags();
+	});
+}
+
+function addTagToDB(tag) {
+	tagsRef.child(tag).update({
+		tabs: false,
+	});
+}
+
 async function removeTabFromDB(index){
-	db.ref('tabs').child(keys[index]).remove().then(function(){
+	tabsRef.child(keys[index]).remove().then(function(){
 		return;
 	});
 }
@@ -177,7 +229,7 @@ async function removeCheckedTabsFromDB(){
 	for(i in checkedTabs){
 		tabsToRemove[keys[checkedTabs[i]]]=null;
 	}
-	db.ref('tabs').update(tabsToRemove).then(async ()=>{return;});
+	tabsRef.update(tabsToRemove).then(async ()=>{return;});
 }
 
 function populateWithLinks(){
@@ -189,7 +241,7 @@ function populateWithLinks(){
 			'https://www.runnersworld.com/training/g20862016/cool-down-routine/']
 	
 	for (var i in titles){
-		db.ref('tabs').push({
+		tabsRef.push({
 			title: titles[i],
 			url: urls[i]
 		})
@@ -199,14 +251,22 @@ function populateWithLinks(){
 
 
 setAuthListeners(()=>{
+	// &nbsp = space
+	// &#10003 = checkmark
 	document.getElementById('main-container').innerHTML = `
 			<img src="assets/loading2.gif" id="loading"/>
-			<div id="assign-groups-container" class="hidden"></div>
+			<div id="assign-tags-container" class="hidden">
+				<div id="add-tag" class="top-tag">
+					<input type="text" id="add-tag-field" class="hidden">
+					<button id="add-tag-submit-btn">+</button>
+				</div>
+			</div>
 			<ul id="tabs-list">
 			</ul>`;
 	h_tabs_list = document.getElementById('tabs-list');
 	// populateWithLinks();
 	displayTabsFromDB();
+	displayTagsFromDB();
 	startListeners();
 });
 		

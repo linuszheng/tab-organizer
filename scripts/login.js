@@ -1,3 +1,7 @@
+var uid;
+var tabsRef;
+var tagsRef;
+
 var logoutBtn = document.getElementById('logout-btn');
 
 function makeLoginDOMElements(){
@@ -43,6 +47,9 @@ setLogOutDOMListener();
 function setAuthListeners(callbackOnLogin){
     auth.onAuthStateChanged((user)=>{
         if(user) {
+            uid = user.uid;
+            tabsRef = db.ref(uid).child('tabs');
+            tagsRef = db.ref(uid).child('tags');
             logoutBtn.style.visibility = 'visible';
             callbackOnLogin();
         } else {
