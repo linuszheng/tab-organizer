@@ -20,6 +20,7 @@ class Tab {
 
 // ---------------------------- DOM Elements ----------------------------
 
+var tagsOuterContainer;
 var assignTagsContainer;
 var addTagNode;
 var addTagSubmitBtn;
@@ -28,6 +29,7 @@ var addTagField;
 // ---------------------------- DOM Interactions ----------------------------
 
 function startListeners(){
+	tagsOuterContainer = document.getElementById('tags-outer-container');
 	assignTagsContainer = document.getElementById('assign-tags-container');
 	addTagNode = document.getElementById('add-tag');
 	addTagSubmitBtn = document.getElementById('add-tag-submit-btn');
@@ -50,11 +52,11 @@ function startListeners(){
 	});
 
 	document.getElementById('assign-tags-btn').addEventListener('click',()=>{
-		let cl = assignTagsContainer.classList.length;
+		let cl = tagsOuterContainer.classList.length;
 		if(cl > 0) {
-			assignTagsContainer.classList.remove('hidden');
+			tagsOuterContainer.classList.remove('hidden');
 		}
-		else assignTagsContainer.classList.add('hidden');
+		else tagsOuterContainer.classList.add('hidden');
 	});
 
 	addTagSubmitBtn.addEventListener('click', ()=>{
@@ -124,6 +126,12 @@ function createTabRow(tab) {
 		window.open(tabs[index].url);
 		await removeTabFromDB(index);
 		removeTabFromArrays(index);
+		for(otherI in checkedTabs){
+			let otherIndex = checkedTabs[otherI];
+			if(otherIndex > index){
+				checkedTabs[otherI] -= 1;
+			}
+		}
 		h_tabs_list.removeChild(li);
 	});
 	h_checkbox.addEventListener('input', function(e){
@@ -255,10 +263,18 @@ setAuthListeners(()=>{
 	// &#10003 = checkmark
 	document.getElementById('main-container').innerHTML = `
 			<img src="assets/loading2.gif" id="loading"/>
-			<div id="assign-tags-container" class="hidden">
-				<div id="add-tag" class="top-tag">
-					<input type="text" id="add-tag-field" class="hidden">
-					<button id="add-tag-submit-btn">+</button>
+			<div id="tags-outer-container" class="hidden">
+				<div id="assign-tags-container">
+					<div id="add-tag" class="top-tag">
+						<input type="text" id="add-tag-field" class="hidden">
+						<button id="add-tag-submit-btn">+</button>
+					</div>
+				</div>
+				<div id="tag-commands-container">
+					<div class="tag-commands">CLEAR</div>
+					<div class="tag-commands">ASSIGN</div>
+					<div class="tag-commands">SELECT</div>
+				</div>
 				</div>
 			</div>
 			<ul id="tabs-list">
