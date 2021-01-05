@@ -1,9 +1,5 @@
 
 // -------------------------------------------------------- Global Variables --------------------------------------------------------
-var h_title = document.getElementById("enter-title");
-var h_url = document.getElementById("enter-url");
-var h_create = document.getElementById("create-btn");
-
 var title = "";
 var url = "";
 var isPopup = false;
@@ -33,9 +29,22 @@ async function createClicked() {
 	}
 }
 
-h_title.addEventListener("change", titleChanged);
-h_url.addEventListener("change", urlChanged);
-h_create.addEventListener("click", createClicked);
+function makeNewContent(){
+	document.getElementById('main-container').innerHTML = `
+	<input type="text" id="enter-title" class="create-input" size="30" placeholder="title">
+	<input type="url" id="enter-url" class="create-input" size="100" placeholder="url">
+	<button id="create-btn">Create!</button>
+	<div id="extra-space"></div>`
+
+	var h_title = document.getElementById("enter-title");
+	var h_url = document.getElementById("enter-url");
+	var h_create = document.getElementById("create-btn");
+
+	h_title.addEventListener("change", titleChanged);
+	h_url.addEventListener("change", urlChanged);
+	h_create.addEventListener("click", createClicked);
+}
+
 
 // -------------------------------------------------------- Firebase --------------------------------------------------------
 
@@ -48,8 +57,20 @@ async function addToDB(){
 	});
 }
 
+auth.onAuthStateChanged((user)=>{
+	if(user){
+		makeNewContent();
+	} else {
+		makeLoginElements();
+		setLoginListeners();
+		console.log('need to login!');
+	}
+});
 
-// if this is a popup created by bookmarklet.js -----------------------------------------------------------------------
+
+
+
+// ------------------------ if this is a popup created by bookmarklet.js ------------------------------
 
 /*		Running a script (below) on the desired webpage will create a popup of this site with the link and title already filled
 		in. Cross-origin communication between this webpage and any webpage on the Internet (injected with the bookmarklet) limits the access that

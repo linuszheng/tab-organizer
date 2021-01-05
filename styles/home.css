@@ -56,6 +56,18 @@ input[type=checkbox] {
 	transform: scale(2);
 }
 
+#assign-groups-container {
+	height: 100px;
+	-moz-transition: all .1s ease-in;
+    -o-transition: all .1s ease-in;
+    -webkit-transition: all .1s ease-in;
+    transition: all .1s ease-in;
+}
+
+#assign-groups-container.hidden {
+	height: 0px;
+}
+
 /*---------------------------------- TOP BAR EXTRAS ----------------------------------*/
 
 .top-bar {
@@ -67,6 +79,17 @@ input[type=checkbox] {
 	flex-direction: row;
 	align-items: flex-end;
 	justify-content: flex-end;
+}
+
+div.spacer {
+	width: 25px;
+}
+
+#assign-groups-btn {
+	background-color: #c23ea5;
+	color: white;
+	font-size: 20px;
+	cursor: pointer;
 }
 
 #trash {

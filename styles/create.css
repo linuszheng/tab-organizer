@@ -1,6 +1,6 @@
 /*--------------------------------- Main Content ---------------------------------*/
 
-input {
+.create-input {
 	border-top-style: hidden;
 	border-right-style: hidden;
 	border-left-style: hidden;
@@ -14,11 +14,11 @@ input {
 	background-color: #eee;
 }
 
-input:hover {
+.create-input:hover {
 	background-color: #e6ffe6;
 }
 
-input:focus, input:not(:placeholder-shown) {
+.create-input:focus, .create-input:not(:placeholder-shown) {
 	outline: none;
 	background-color: #99ff99;
 }

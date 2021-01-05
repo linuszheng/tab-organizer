@@ -79,7 +79,7 @@ body {
 
 /*----------------------------------CONTENT----------------------------------*/
 
-.container {
+.main-container {
 	display: grid;
 	align-items: end;
 	grid-template-columns: repeat(12, 1fr);

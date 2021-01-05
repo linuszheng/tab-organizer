@@ -4,27 +4,50 @@ var keys = [];
 var tabs = [];
 var checkedTabs = [];
 
-var h_tabs_list = document.getElementById('tabs-list');
+var h_tabs_list;
 
 var canLink = true;
 
+// ---------------------------- Classes ----------------------------
+
+class Tab{
+	key;
+	title;
+	url;
+	tags;
+
+	Tab(t){
+
+	}
+}
+
+
 // ---------------------------- DOM Interactions ----------------------------
 
-document.getElementById('deploy-btn').addEventListener('click', function(e){
-	var time = document.getElementById('enter-minutes').value;
-	if(time<=0) return;
-	openTabsForTime(checkedTabs, time*60*1000);
-});
-
-document.getElementById('trash').addEventListener('click', async function(e){
-	let tabsReversed = [...checkedTabs].sort().reverse(); // start deleting from bottom to top
-	removeCheckedTabsFromDB().then(async ()=>{
-		for(const i of tabsReversed) {
-			removeTabFromArrays(i);
-			h_tabs_list.children[i].remove();
-		}
-	})
-});
+function startListeners(){
+	document.getElementById('deploy-btn').addEventListener('click', function(e){
+		var time = document.getElementById('enter-minutes').value;
+		if(time<=0) return;
+		openTabsForTime(checkedTabs, time*60*1000);
+	});
+	
+	document.getElementById('trash').addEventListener('click', async function(e){
+		let tabsReversed = [...checkedTabs].sort().reverse(); // start deleting from bottom to top
+		removeCheckedTabsFromDB().then(async ()=>{
+			for(const i of tabsReversed) {
+				removeTabFromArrays(i);
+				h_tabs_list.children[i].remove();
+			}
+		})
+	});
+	
+	document.getElementById('assign-groups-btn').addEventListener('click',()=>{
+		let assignGroupsContainer = document.getElementById('assign-groups-container');
+		let cl = assignGroupsContainer.classList.length;
+		if(cl > 0) assignGroupsContainer.classList.remove('hidden');
+		else assignGroupsContainer.classList.add('hidden');
+	});
+}
 
 function createTabRow(tab) {
 	var h_list_elem = document.createElement('li');
@@ -175,4 +198,19 @@ function populateWithLinks(){
 }
 
 // populateWithLinks();
-displayTabsFromDB();
+
+auth.onAuthStateChanged((user)=>{
+	if(user) {
+		document.getElementById('main-container').innerHTML = `
+			<img src="assets/loading2.gif" id="loading"/>
+			<div id="assign-groups-container" class="closed"></div>
+			<ul id="tabs-list">
+			</ul>`;
+		h_tabs_list = document.getElementById('tabs-list');
+		displayTabsFromDB();
+	} else {
+		makeLoginElements();
+		setLoginListeners();
+		console.log('need to login!');
+	}
+});
