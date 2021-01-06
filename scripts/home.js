@@ -3,8 +3,10 @@
 var keys = [];
 var tabs = [];
 var checkedTabs = [];
+var selectedTags = [];
 
 var h_tabs_list;
+var h_tags = [];
 
 var canLink = true;
 
@@ -38,11 +40,15 @@ function startListeners(){
 	document.getElementById('deploy-btn').addEventListener('click', function(e){
 		var time = document.getElementById('enter-minutes').value;
 		if(time<=0) return;
+		clearCheckedTabs();
 		openTabsForTime(checkedTabs, time*60*1000);
 	});
 	
 	document.getElementById('trash').addEventListener('click', async function(e){
-		let tabsReversed = [...checkedTabs].sort().reverse(); // start deleting from bottom to top
+		let tabsReversed = [...checkedTabs].sort(
+			(a,b)=>{a-b} // sort by int, instead of alphabetically (this bug took a while to find)
+			).reverse(); // start deleting from bottom to top, to avoid affecting indices of previous rows
+		console.log(tabsReversed)
 		removeCheckedTabsFromDB().then(async ()=>{
 			for(const i of tabsReversed) {
 				removeTabFromArrays(i);
@@ -52,15 +58,14 @@ function startListeners(){
 	});
 
 	document.getElementById('assign-tags-btn').addEventListener('click',()=>{
-		let cl = tagsOuterContainer.classList.length;
-		if(cl > 0) {
+		if(tagsOuterContainer.classList.contains('hidden')) {
 			tagsOuterContainer.classList.remove('hidden');
 		}
 		else tagsOuterContainer.classList.add('hidden');
 	});
 
 	addTagSubmitBtn.addEventListener('click', ()=>{
-		if(addTagField.classList.length > 0){	// if field hidden (this means addTagSubmitBtn is a +)
+		if(addTagField.classList.contains('hidden')){	// if field hidden (this means addTagSubmitBtn is a +)
 			addTagField.classList.remove('hidden');
 			addTagSubmitBtn.innerHTML = '&#10003';
 		} else if (addTagField.value.length > 0){	// else addTagSubmitBtn is a checkmark
@@ -68,20 +73,100 @@ function startListeners(){
 			if(!tags.includes(newTag)){
 				addTagField.value = '';
 				tags.push(newTag);
-				addTagToDOM(newTag);
+				let newTagNode = addTopTagToDOM(newTag);
+				h_tags.push(newTagNode);
 				addTagToDB(newTag);
 				addTagSubmitBtn.innerHTML = '+';
 				addTagField.classList.add('hidden');
 			}
 		}
 	});
+
+	document.getElementById('tag-clear').addEventListener('click',clearSelections);
+
+	document.getElementById('tag-assign').addEventListener('click',()=>{
+		for(var tag of selectedTags){
+			for(var i of checkedTabs){
+				let tabKey = keys[i];
+				let tab = tabs[i];
+				if(!tabContainsTag(tab, tag)){
+					if(tab.tags==null || tab.tags==false) tab.tags={[tag]: true};
+					else tab.tags[tag] = true;
+					updateTabTagToDB(tabKey, tag);
+					addTabTagToDOM(tag, h_tabs_list.children[i].getElementsByClassName('tags-container')[0]);
+				}
+			}
+		}
+		clearSelections();
+	});
+
+	document.getElementById('tag-select').addEventListener('click',()=>{
+		for(var tag of selectedTags){
+			for(var i = 0; i < tabs.length; i++){
+				if(!checkedTabs.includes(i)) {
+					let tab = tabs[i];
+					if(tabContainsTag(tab, tag)){
+						h_tabs_list.children[i].getElementsByClassName('tab-checkbox')[0].checked = true;
+						h_tabs_list.children[i].classList.add('select');
+						checkedTabs.push(i);
+					}
+				} else continue;
+			}
+		}
+		clearSelectedTags();
+	});
 }
 
-function addTagToDOM(tagName) {
+function clearCheckedTabs(){
+	for(var i of checkedTabs){
+		h_tabs_list.children[i].getElementsByClassName('tab-checkbox')[0].checked = false;
+		h_tabs_list.children[i].classList.remove('select');
+	}
+	checkedTabs = [];
+}
+
+function clearSelectedTags(){
+	for(var tagElem of h_tags){
+		if(selectedTags.includes(tagElem.innerText)){
+			tagElem.classList.remove('select');
+		}
+	}
+	selectedTags = [];
+}
+
+function clearSelections(){
+	clearCheckedTabs();
+	clearSelectedTags();
+}
+
+function addTopTagToDOM(tagName) {
 	let newTagNode = document.createElement('div');
+	newTagNode.classList.add('tag');
 	newTagNode.classList.add('top-tag');
 	newTagNode.innerText = tagName;
+	newTagNode.addEventListener('click',()=>{
+		if(newTagNode.classList.contains('select')){
+			newTagNode.classList.remove('select');
+			for(var i in selectedTags){
+				if(selectedTags[i]==tagName){
+					selectedTags.splice(i, 1);
+				}
+			}
+		} else {
+			newTagNode.classList.add('select');
+			selectedTags.push(tagName);
+		}
+	});
 	assignTagsContainer.insertBefore(newTagNode, addTagNode);
+	return newTagNode;
+}
+
+function addTabTagToDOM(tagName, tabTagContainerNode) {
+	let newTagNode = document.createElement('div');
+	newTagNode.classList.add('tag');
+	newTagNode.classList.add('tab-tag');
+	newTagNode.innerText = tagName;
+	tabTagContainerNode.appendChild(newTagNode);
 }
 
 function createTabRow(tab) {
@@ -89,27 +174,32 @@ function createTabRow(tab) {
 	var h_container = document.createElement('div');
 	var h_title = document.createElement('a');
 	var h_url = document.createElement('a');
-	var h_tag = document.createElement('div');
+	var h_tagContainer = document.createElement('div');
 	var h_checkbox = document.createElement('input');
 	var h_burn = document.createElement('div');
 	
 	h_title.innerText = tab.title;
 	h_url.innerText = tab.url;
 	h_url.href = tab.url;
-	h_tag.innerText = 'null';
 	h_checkbox.type = 'checkbox';
 	h_burn.innerText = 'Burn';
 
 	h_container.classList.add('tab-container');
 	h_checkbox.classList.add('tab-checkbox');
 	h_burn.classList.add('tab-burn');
+	h_tagContainer.classList.add('tags-container');
 	h_url.style.fontSize = '10px';
-	h_tag.style.fontSize = '12px';
+
+	if(tab.tags!=false && tab.tags!=null){
+		for(var i of Object.keys(tab.tags)){
+			addTabTagToDOM(i, h_tagContainer);
+		}
+	}
 
 	h_container.appendChild(h_title);
 	h_container.appendChild(document.createElement('br'));
 	h_container.appendChild(h_url);
-	h_container.appendChild(h_tag);
+	h_container.appendChild(h_tagContainer);
 	h_list_elem.appendChild(h_container);
 	h_list_elem.appendChild(h_checkbox)
 	h_list_elem.appendChild(h_burn);
@@ -139,6 +229,7 @@ function createTabRow(tab) {
 		var index = Array.from(h_tabs_list.children).indexOf(li);
 		if(e.target.checked){
 			checkedTabs.push(index);
+			li.classList.add('select');
 		} else {
 			for(i in checkedTabs){
 				if(checkedTabs[i]==index){
@@ -146,6 +237,7 @@ function createTabRow(tab) {
 					break;
 				}
 			}
+			li.classList.remove('select');
 		}
 	});
 	h_burn.addEventListener('mouseover', function(e){
@@ -172,7 +264,7 @@ function displayTabs(){
 
 function displayTags(){
 	for(tag of tags){
-		addTagToDOM(tag);
+		h_tags.push(addTopTagToDOM(tag));
 	}
 }
 
@@ -197,6 +289,13 @@ function removeTabFromArrays(index){
 			checkedTabs.splice(i, 1);
 		}
 	}
+}
+
+function tabContainsTag(tab, tag){
+	if(tab.tags!=false && tab.tags!=null){
+		return Object.keys(tab.tags).includes(tag);
+	}
+	return false;
 }
 
 // ---------------------------------- Firebase -------------------------------------
@@ -226,6 +325,15 @@ function addTagToDB(tag) {
 	});
 }
 
+function updateTabTagToDB(tabKey, tag) {
+	tagsRef.child(tag).child('tabs').update({
+		[tabKey]: true,
+	});
+	tabsRef.child(tabKey).child('tags').update({
+		[tag]: true,
+	});
+}
+
 async function removeTabFromDB(index){
 	tabsRef.child(keys[index]).remove().then(function(){
 		return;
@@ -251,7 +359,8 @@ function populateWithLinks(){
 	for (var i in titles){
 		tabsRef.push({
 			title: titles[i],
-			url: urls[i]
+			url: urls[i],
+			tags: false,
 		})
 	}
 	
@@ -264,16 +373,16 @@ setAuthListeners(()=>{
 	document.getElementById('main-container').innerHTML = `
 			<img src="assets/loading2.gif" id="loading"/>
 			<div id="tags-outer-container" class="hidden">
-				<div id="assign-tags-container">
-					<div id="add-tag" class="top-tag">
+				<div id="assign-tags-container" class="tags-container">
+					<div id="add-tag" class="tag top-tag">
 						<input type="text" id="add-tag-field" class="hidden">
 						<button id="add-tag-submit-btn">+</button>
 					</div>
 				</div>
 				<div id="tag-commands-container">
-					<div class="tag-commands">CLEAR</div>
-					<div class="tag-commands">ASSIGN</div>
-					<div class="tag-commands">SELECT</div>
+					<div class="tag-commands" id="tag-clear">CLEAR</div>
+					<div class="tag-commands" id="tag-assign">ASSIGN</div>
+					<div class="tag-commands" id="tag-select">SELECT</div>
 				</div>
 				</div>
 			</div>

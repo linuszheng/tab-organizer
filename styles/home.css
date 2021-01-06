@@ -39,6 +39,10 @@ ul#tabs-list > li.burn {
 	background: #e94040;
 }
 
+ul#tabs-list > li.select {
+	background: rgb(104, 104, 207);
+}
+
 .tab-container {
 	flex: 1 1 0;
 }
@@ -63,7 +67,8 @@ input[type=checkbox] {
 	display: flex;
 }
 
-#assign-tags-container {
+
+.tags-container {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-start;
@@ -91,15 +96,24 @@ input[type=checkbox] {
 	display: none;
 }
 
-.top-tag {
+.tag {
 	border: 2px;
 	border-radius: 5px;
 	background-color: rgb(145, 245, 153);
+	margin: 5px;
+}
 
+.top-tag {
 	font-size: 20px;
 	cursor: pointer;
+}
 
-	margin: 5px;
+.tab-tag {
+	font-size: 14px;
+}
+
+.top-tag.select {
+	background-color: rgb(146, 146, 233);
 }
 
 #add-tag-field {

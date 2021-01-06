@@ -58,7 +58,8 @@ function makeNewContent(){
 async function addToDB(){
 	tabsRef.push({
 		title: title,
-		url: url
+		url: url,
+		tags: false,
 	}, function(){
 		return;
 	});
