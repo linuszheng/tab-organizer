@@ -42,8 +42,8 @@ function setLogOutDOMListener(){
         auth.signOut();
     })
 }
-
 setLogOutDOMListener();
+
 function setAuthListeners(callbackOnLogin){
     auth.onAuthStateChanged((user)=>{
         if(user) {

@@ -12,14 +12,6 @@ var canLink = true;
 
 var tags = [];
 
-// ---------------------------- Structure ----------------------------
-
-class Tab {
-	title;	// String
-	url;	// String
-	tags;	// list of Strings
-}
-
 // ---------------------------- DOM Elements ----------------------------
 
 var tagsOuterContainer;
