@@ -314,8 +314,10 @@ function displayTabsFromDB() {
 
 function displayTagsFromDB() {
 	tagsRef.once('value').then(function(snapshot){
-		tags = Object.keys(snapshot.val());
-		displayTags();
+		if(snapshot.val()!=null){
+			tags = Object.keys(snapshot.val());
+			displayTags();
+		}
 	});
 }
 
@@ -335,17 +337,27 @@ function updateTabTagToDB(tabKey, tag) {
 }
 
 async function removeTabFromDB(index){
-	tabsRef.child(keys[index]).remove().then(function(){
+	let tab = tabs[index];
+	let key = keys[index];
+	if(tab.tags!=false && tab.tags!=null){
+		var updates = {};
+		console.log(updates);
+		for(tag of Object.keys(tab.tags)){
+			console.log(tag+'/tabs/'+key);
+			updates[tag+'/tabs/'+key] = null;
+		}
+		console.log(updates);
+		tagsRef.update(updates);
+	}
+	tabsRef.child(key).remove().then(function(){
 		return;
 	});
 }
 
 async function removeCheckedTabsFromDB(){
-	tabsToRemove = {};
-	for(i in checkedTabs){
-		tabsToRemove[keys[checkedTabs[i]]]=null;
+	for(i of checkedTabs){
+		removeTabFromDB(i);
 	}
-	tabsRef.update(tabsToRemove).then(async ()=>{return;});
 }
 
 function populateWithLinks(){
