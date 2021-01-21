@@ -32,8 +32,8 @@ function startListeners(){
 	document.getElementById('deploy-btn').addEventListener('click', function(e){
 		var time = document.getElementById('enter-minutes').value;
 		if(time<=0) return;
-		clearCheckedTabs();
 		openTabsForTime(checkedTabs, time*60*1000);
+		clearCheckedTabs();
 	});
 	
 	document.getElementById('trash').addEventListener('click', async function(e){
